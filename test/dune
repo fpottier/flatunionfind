@@ -1,0 +1,5 @@
+(executable
+  (name test)
+  (libraries monolith unionFind flatunionfind)
+  (enabled_if (= %{profile} dev))
+)

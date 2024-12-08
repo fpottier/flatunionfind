@@ -1,0 +1,14 @@
+{0 A Flat Union-Find Data Structure}
+
+[flatunionfind] is an OCaml library that offers
+a flat union-find data structure,
+that is,
+a union-find data structure
+that is stored inside a vector.
+
+{1 Installation and Usage}
+
+Type [opam install flatunionfind].
+
+In your [dune] file, add [(libraries flatunionfind)] to the description of
+your [library] or [executable].

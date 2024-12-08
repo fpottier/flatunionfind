@@ -1,0 +1,24 @@
+;; This is a library.
+(library
+  (name flatunionfind)
+  (public_name flatunionfind)
+  (wrapped false)
+  (libraries hachis hector)
+)
+
+;; Warnings are enabled in development builds and disabled in release builds.
+;; Assertions are disabled in release builds.
+(env
+  (dev     (flags :standard -w @A-4-44))
+  (release (flags :standard -noassert ))
+)
+
+;; To avoid warning 70, we copy Signatures.ml to Signatures.mli.
+
+(rule
+  (targets Signatures.mli)
+  (action (copy Signatures.ml Signatures.mli))
+)
+
+;; Request documentation.
+(documentation)

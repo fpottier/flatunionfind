@@ -1,0 +1,8 @@
+# The following files and directories are excluded from the release archive.
+.git*           export-ignore
+*.md            export-ignore
+Makefile        export-ignore
+headache.config export-ignore
+*.txt           export-ignore
+play.ml         export-ignore
+test            export-ignore
