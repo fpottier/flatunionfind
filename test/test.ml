@@ -64,6 +64,13 @@ let () =
   let spec = (R.can_be_dropped % point) ^> unit in
   declare "drop" spec R.drop C.drop;
 
+  (* We test that [find], [is_representative], and [union] produce exactly
+     the same results in the reference implementation and in the candidate
+     implementation. This test is stricter than necessary: because [union]
+     is in principle free to decide which of the two points becomes the
+     representative of the new class, the two implementations could disagree.
+     They happen to agree, so this strict test is acceptable. *)
+
   let spec = (valid % point) ^> point in
   declare "find" spec R.find C.find;
 
