@@ -19,6 +19,15 @@ let valid = R.is_valid
 (* This is the candidate implementation. *)
 module C = FlatUnionFind.Make()
 
+(* Testing [iter] imposes a huge performance penalty (about 200x), so
+   it is disabled by default. The reason why it costs so much is that
+   one call to [iter] returns a list of all points created since the
+   beginning of time, so (in the eyes of Monolith) it creates a large
+   of number of (potentially) new points. *)
+
+let test_iter =
+  false
+
 (* -------------------------------------------------------------------------- *)
 
 (* The abstract type [point]. *)
@@ -35,13 +44,16 @@ let () =
   let spec = unit ^> int in
   declare "population" spec R.population C.population;
 
-  (* TODO The list of points needs to be sorted,
-          or we must ensure a deterministic order.
-  let spec = iter (unit ^> list point) in
-  declare "(fun f () -> iter)" spec
-    (fun f () -> R.iter f)
-    (fun f () -> C.iter f);
-   *)
+  (* The specification of [C.iter] does not indicate in what order the
+     points are produced. We implement [R.iter] so that it uses the
+     same order. This way, we can avoid a sorting step, which would be
+     problematic, as we do not have an ordering function on points. *)
+  if test_iter then begin
+    let spec = iter (unit ^> list point) in
+    declare "(fun f () -> iter)" spec
+      (fun f () -> R.iter f)
+      (fun f () -> C.iter f)
+  end;
 
   let spec = unit ^> point in
   declare "fresh" spec R.fresh C.fresh;
@@ -70,5 +82,5 @@ let () =
 
 let () =
   dprintf "          open FlatUnionFind;;\n";
-  let fuel = 128 in
+  let fuel = if test_iter then 8 else 128 in
   main fuel

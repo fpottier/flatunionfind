@@ -93,4 +93,11 @@ let union x y =
   UnionFind.union x y
 
 let iter f =
-  Stack.iter f valid
+  (* Stack.iter f valid *)
+  (* We iterate from oldest to newest elements because we want to
+     produce points in the same order as the candidate implementation. *)
+  valid
+  |> Stack.to_seq
+  |> List.of_seq
+  |> List.rev
+  |> List.iter f
