@@ -25,6 +25,9 @@ module C = FlatUnionFind.Make()
    beginning of time, so (in the eyes of Monolith) it creates a large
    of number of (potentially) new points. *)
 
+(* When [test_iter] is set, Monolith > 20241126 must be used; otherwise
+   the error message "Argh -- reached max environment size" is observed. *)
+
 let test_iter =
   false
 
