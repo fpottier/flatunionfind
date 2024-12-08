@@ -112,7 +112,7 @@ versions:
 .PHONY: handiwork
 handiwork:
 	@ for v in $(VERSIONS) ; do \
-	    opam install --switch $$v monolith ocamlfind ; \
+	    opam install --switch $$v monolith ocamlfind hachis hector unionFind ; \
 	  done
 
 # ------------------------------------------------------------------------------
