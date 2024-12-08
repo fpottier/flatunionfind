@@ -1,10 +1,24 @@
 {0 A Flat Union-Find Data Structure}
 
-[flatunionfind] is an OCaml library that offers
-a flat union-find data structure,
-that is,
-a union-find data structure
+This library that offers
+{b a union-find data structure}
 that is stored inside a vector.
+
+Its main module is {!FlatUnionFind} -- click this link for documentation.
+
+{1:performance Performance}
+
+Compared with
+{{: https://gitlab.inria.fr/fpottier/unionfind} unionFind},
+which uses heap-allocated objects and pointers between them,
+this data structure
+can (in some usage scenarios) be {b faster and more compact}.
+
+However,
+because it does not allow the garbage collector
+to reclaim dead points,
+it can also be
+{b slower and use more space}.
 
 {1 Installation and Usage}
 
