@@ -2,7 +2,8 @@
    forests, with path compression and linking by rank. The data structure
    is stored in a flat integer vector. *)
 
-open Signatures
+(** @inline *)
+include module type of Signatures
 
 (**Applying the functor [Make] creates a fresh instance of the union-find
    data structure. This functor is generative: each application returns a

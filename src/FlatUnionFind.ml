@@ -1,3 +1,5 @@
+include Signatures
+
 module V = Hector.Int
 
 (* A parent is a point, that is, an index into the vector. *)
