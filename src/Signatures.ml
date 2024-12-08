@@ -1,3 +1,4 @@
+(**This signature describes the result of the functor {!FlatUnionFind.Make}. *)
 module type UF = sig
 
   (**[point] is the type of a point in the union-find data structure. It is
