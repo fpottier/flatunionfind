@@ -268,17 +268,25 @@ let[@inline] drop (x : point) =
   drop x;
   V.drop data
 
-let[@inline] get (x : point) : data =
+let[@inline] get_root (x : point) : data =
+  assert (is_representative x);
   V.get data (x :> int)
 
-let[@inline] set (x : point) (d : data) : unit =
+let[@inline] get (x : point) : data =
+  get_root (find x)
+
+let[@inline] set_root (x : point) (d : data) : unit =
+  assert (is_representative x);
   V.set data (x :> int) d
+
+let[@inline] set (x : point) (d : data) =
+  set_root (find x) d
 
 let eq =
   equiv
 
-(* The use of [union x y] in [merge] could sped up a little bit if we
-   had a [union] function that assumes that [x] and [y] are roots. *)
+(* The use of [union x y] in [merge] could sped up a little bit if we had
+   a function [union_root], which assumes that [x] and [y] are roots. *)
 
 let merge (f : data -> data -> data) (x : point) (y : point) : point =
   let x = find x
@@ -286,10 +294,10 @@ let merge (f : data -> data -> data) (x : point) (y : point) : point =
   if eq x y then
      x
    else
-     let vx, vy = get x, get y in
+     let vx, vy = get_root x, get_root y in
      let v = f vx vy in
      let z = union x y in
-     set z v;
+     set_root z v;
      z
 
 (* [fresh] must not be exported, as it does not extend the data vector.
