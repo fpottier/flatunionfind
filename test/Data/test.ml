@@ -17,19 +17,10 @@ module R = Reference
 let valid = R.is_valid
 
 (* This is the candidate implementation. *)
-module C = FlatUnionFind.Make()
+module C = FlatUnionFind.MakeWithData(struct type t = int end)()
 
-(* Testing [iter] imposes a huge performance penalty (about 200x), so
-   it is disabled by default. The reason why it costs so much is that
-   one call to [iter] returns a list of all points created since the
-   beginning of time, so (in the eyes of Monolith) it creates a large
-   of number of (potentially) new points. *)
-
-(* When [test_iter] is set, Monolith > 20241126 must be used; otherwise
-   the error message "Argh -- reached max environment size" is observed. *)
-
-let test_iter =
-  false
+let () =
+  dprintf "          open FlatUnionFind.MakeWithData(struct type t = int end)();;\n"
 
 (* -------------------------------------------------------------------------- *)
 
@@ -37,6 +28,11 @@ let test_iter =
 
 let point =
   declare_abstract_type()
+
+(* The concrete type [data]. *)
+
+let data =
+  lt 32
 
 (* -------------------------------------------------------------------------- *)
 
@@ -47,19 +43,10 @@ let () =
   let spec = unit ^> int in
   declare "population" spec R.population C.population;
 
-  (* The specification of [C.iter] does not indicate in what order the
-     points are produced. We implement [R.iter] so that it uses the
-     same order. This way, we can avoid a sorting step, which would be
-     problematic, as we do not have an ordering function on points. *)
-  if test_iter then begin
-    let spec = iter (unit ^> list point) in
-    declare "(fun f () -> iter)" spec
-      (fun f () -> R.iter f)
-      (fun f () -> C.iter f)
-  end;
+  (* We do not test [iter]. *)
 
-  let spec = unit ^> point in
-  declare "fresh" spec R.fresh C.fresh;
+  let spec = data ^> point in
+  declare "make" spec R.make C.make;
 
   let spec = (R.can_be_dropped % point) ^> unit in
   declare "drop" spec R.drop C.drop;
@@ -84,6 +71,15 @@ let () =
   let spec = (valid % point) ^> (valid % point) ^> point in
   declare "union" spec R.union C.union;
 
+  let spec = (valid % point) ^> data in
+  declare "get" spec R.get C.get;
+
+  let spec = (valid % point) ^> data ^> unit in
+  declare "set" spec R.set C.set;
+
+  let spec = (valid % point) ^> (valid % point) ^> point in
+  declare "merge (-)" spec (R.merge (-)) (C.merge (-));
+
   ()
 
 (* -------------------------------------------------------------------------- *)
@@ -91,6 +87,5 @@ let () =
 (* Start the engine! *)
 
 let () =
-  dprintf "          open FlatUnionFind;;\n";
-  let fuel = if test_iter then 8 else 128 in
+  let fuel = 128 in
   main fuel
