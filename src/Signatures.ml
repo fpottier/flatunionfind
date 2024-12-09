@@ -85,3 +85,44 @@ module type UF = sig
   : Hachis.HashSet.SET with type element = point
 
 end
+
+(* -------------------------------------------------------------------------- *)
+
+(**This signature describes the result of the functor {!FlatUnionFind.Wrap}.  *)
+module type UFD = sig
+
+  type data
+
+  (**This signature extends {!UF} with new functionality: with every
+     equivalence class, a datum of type [data] is associated. To create a
+     new point, the function [fresh] cannot be used; instead, {!make} must
+     be used. *)
+  include UF
+
+  (**[make v] creates a new point, which forms a new singleton equivalence
+     class, and associates the value [v] with this class. *)
+  val make : data -> point
+
+  (**[get x] returns the value that is currently associated with the
+     equivalence class of the point [x]. *)
+  val get: point -> data
+
+  (**[set x v] associates the value [v] with the equivalence class of the
+     point [x]. *)
+  val set: point -> data -> unit
+
+  (**[eq] is a synonym for [equiv]. *)
+  val eq : point -> point -> bool
+
+  (**If [eq x y] is true initially, then [merge f x y] has no observable
+     effect. Otherwise, [merge f x y] merges the equivalence classes of the
+     points [x] and [y] and associates the value [f vx vy] with the new class,
+     where [vx] and [vy] are the values initially associated with the classes
+     of [x] and [y]. The function [f] is {i not} allowed to access the
+     union-find data structure. *)
+  val merge : (data -> data -> data) -> point -> point -> point
+
+  (**/**)
+  val fresh : unit
+
+end
