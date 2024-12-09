@@ -10,3 +10,12 @@ include module type of Signatures
    new module, with its own mutable internal state and its own abstract type
    [point]. *)
 module Make () : UF
+
+(**Applying the functor [MakeWithData] creates a fresh instance of the
+   union-find data structure. In comparison with [Make], this data structure
+   offers one additional feature: it maintains a map of equivalence classes
+   to user data. This functor is generative: each application returns a new
+   module, with its own mutable internal state and its own abstract type
+   [point]. *)
+module MakeWithData (D : sig type t end) () :
+  UFD with type data = D.t

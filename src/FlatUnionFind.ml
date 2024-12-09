@@ -228,4 +228,75 @@ end) =
        if an array slot was read before it is ever written, then an
        arbitrary integer value would be silently converted to a point. *)
 
-end
+end (* Make *)
+
+(* -------------------------------------------------------------------------- *)
+
+(* We now extend the above implementation of union-find with the ability of
+   associating a piece of data with each point. *)
+
+(* This functor does not take [U : UF] as a parameter, because that would be
+   unsafe. A user would be able to pass a module [U] that has already been
+   used (so there already exists a non-zero number of points). Instead, we
+   call [Make()] internally, so we are certain that we start with a pristine
+   union-find data structure. *)
+
+module MakeWithData (D : sig type t end) () = struct
+
+include Make()
+
+(* [point], [union], [find], [is_representative], [population], [iter],
+   [validate], [equal], [compare], [hash], [show], [equiv], [Vector],
+   [HashSet] are defined by the previous line. *)
+
+type data =
+  D.t
+
+(* We set up a data vector, which represents a map of points to data. *)
+
+module V =
+  Hector.Mono.Make(D)
+
+let data : V.t =
+  V.create()
+
+let[@inline] make (d : data) : point =
+  V.push data d;
+  fresh()
+
+let[@inline] drop (x : point) =
+  drop x;
+  V.drop data
+
+let[@inline] get (x : point) : data =
+  V.get data (x :> int)
+
+let[@inline] set (x : point) (d : data) : unit =
+  V.set data (x :> int) d
+
+let eq =
+  equiv
+
+(* The use of [union x y] in [merge] could sped up a little bit if we
+   had a [union] function that assumes that [x] and [y] are roots. *)
+
+let merge (f : data -> data -> data) (x : point) (y : point) : point =
+  let x = find x
+  and y = find y in
+  if eq x y then
+     x
+   else
+     let vx, vy = get x, get y in
+     let v = f vx vy in
+     let z = union x y in
+     set z v;
+     z
+
+(* [fresh] must not be exported, as it does not extend the data vector.
+   OCaml does not give us a way of removing a structure component, so
+   we hide it with a new (useless) definition of [fresh]. *)
+
+let fresh =
+  ()
+
+end (* MakeWithData *)
