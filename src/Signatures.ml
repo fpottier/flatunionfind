@@ -100,7 +100,8 @@ end
 
 (* -------------------------------------------------------------------------- *)
 
-(**This signature describes the result of the functor {!FlatUnionFind.Wrap}.  *)
+(**This signature describes the result of the functor
+   {!FlatUnionFind.MakeWithData}.  *)
 module type UFD = sig
 
   type data
